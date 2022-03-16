@@ -20,7 +20,8 @@ function closeModal() {
   setTimeout(() => {
     // Remove modal and reset animationName
     modalbg.style.display = "none";
-    content.style.animationName = "modalopen"; // Animation is relaunch on invisible modal so not a problem
+    // Animation is relaunch on invisible modal so not a problem
+    content.style.animationName = "modalopen"; 
   }, 700);
 }
 
@@ -43,7 +44,6 @@ function validate(e) {
       case 'email':
         const emailRegExp = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
         displayErrorMessage = currentElement.value.length === 0 || !emailRegExp.test(currentElement.value);
-        break;
         break;
       case 'birthdate':
         const inputDate = new Date(currentElement.value);
@@ -136,4 +136,4 @@ modalBtn.forEach((btn) => btn.addEventListener("click", launchModal));
 modalCloseBtn.forEach((btn) => btn.addEventListener("click", closeModal));
 
 // Launch validate on form submit
-form.querySelector('input[type="submit"]').addEventListener('click', validate);
+form.addEventListener('submit', validate);
