@@ -32,7 +32,7 @@ img {
 
 .topnav {
   overflow: hidden;
-  margin: 3.5%;
+  margin: 1rem;
 }
 .header-logo {
     float: left;
@@ -79,17 +79,20 @@ img {
   .main-navbar {
     display: flex;
     flex-wrap: wrap;
-    justify-content: flex-end;
+    justify-content: flex-end;  
   }
 }
 
 @media screen and (max-width: 768px) {
   .topnav {
     flex-wrap: wrap;
-    align-items: center;
+    align-items: flex-start;
   }
   .topnav > * {
     flex: 1 1 auto;
+  }
+  .header-logo {
+    margin-top: 10px;
   }
   .header-logo img {
     width: 10rem;

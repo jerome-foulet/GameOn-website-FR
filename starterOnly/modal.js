@@ -1,3 +1,43 @@
+// DOM Elements
+const modalbg = document.querySelector(".bground");
+const modalBtn = document.querySelectorAll(".modal-btn");
+const modalCloseBtn = document.querySelectorAll(".close");
+const formData = document.querySelectorAll(".formData");
+const form = document.getElementById("form");
+const content = document.querySelector(".content");
+
+// Define specific message for each input
+const errorMessages = {
+  first: "Veuillez entrer 2 caractères ou plus pour le champ du Prénom.",
+  last: "Veuillez entrer 2 caractères ou plus pour le champ du Nom.",
+  email: "Veuillez saisir un E-mail valide.",
+  birthdate: "Vous devez entrer votre date de naissance.",
+  quantity: "Vous devez indiquer le nombre (entier) de tournois auxquels vous avez déjà participé.",
+  location: "Vous devez choisir une option.",
+  checkbox1: "Vous devez vérifier que vous acceptez les termes et conditions."
+}
+
+// launch modal event
+modalBtn.forEach((btn) => btn.addEventListener("click", launchModal));
+
+// Close modal event
+modalCloseBtn.forEach((btn) => btn.addEventListener("click", closeModal));
+
+// Launch validate on form submit
+form.addEventListener('submit', validate);
+
+// Prevent use of non numeric value on input type number
+const inputNumber = document.querySelector("#quantity");
+inputNumber.addEventListener("keypress", function (evt) {
+  // 0 for null values
+  // 8 for backspace 
+  // 48-e for 0-9 numbers
+  if (evt.which != 8 && evt.which != 0 && evt.which < 48 || evt.which > 57)
+  {
+      evt.preventDefault();
+  }
+});
+
 function editNav() {
   var x = document.getElementById("myTopnav");
   if (x.className === "topnav") {
@@ -35,14 +75,18 @@ function validate(e) {
   for (const property in errorMessages) {
     let currentElement = document.getElementById(property);
     let displayErrorMessage = false;
+    let specificErrorMessage = null;
     
     switch (property) {
       case 'first':
       case 'last':
-        displayErrorMessage = currentElement.value.length < 2;
+        displayErrorMessage = !isNaN(currentElement.value) || currentElement.value.length < 2;
         break;
       case 'email':
-        const emailRegExp = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+        // More practical implementation of RFC 2822 but allowing test@test
+        // const emailRegExp = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+        // Basic check for string@string.string
+        const emailRegExp = /^\S+@\S+\.\S+$/;
         displayErrorMessage = currentElement.value.length === 0 || !emailRegExp.test(currentElement.value);
         break;
       case 'birthdate':
@@ -50,8 +94,14 @@ function validate(e) {
         const today = new Date();
         // Check date validity and majority if asked
         let todayMinusMajority = new Date();
+        // possibility adding control for majority
         //todayMinusMajority.setFullYear(today.getFullYear() - 18);
-        displayErrorMessage = !isValidDate(inputDate) || inputDate.getTime() > todayMinusMajority.getTime();
+        if(!isValidDate(inputDate)) {
+          displayErrorMessage = true;
+        } else if (inputDate.getTime() > todayMinusMajority.getTime()) {
+          displayErrorMessage = true;
+          specificErrorMessage = "Pas de date dans le futur";
+        }
         break;
       case 'quantity':
         displayErrorMessage = !Number.isInteger(Number(currentElement.value)) || Number(currentElement.value) < 0;
@@ -68,14 +118,15 @@ function validate(e) {
         displayErrorMessage = true;
     }
     
+    // Reset error attributs on other submit
     resetErrorAttributs(currentElement.parentNode);
     if(displayErrorMessage) {
       isValidForm = false;
-      setErrorAttributs(currentElement.parentNode, errorMessages[property]);
+      setErrorAttributs(currentElement.parentNode, specificErrorMessage ?? errorMessages[property]);
     }
   }
 
-  // If no error in form proceed
+  // If no error in form proceed with remove form and display good message
   if(isValidForm) {
     const modalBody = form.parentNode;
     form.remove();
@@ -88,6 +139,7 @@ function validate(e) {
     divNode.appendChild(textSuccess);
     modalBody.appendChild(divNode);
     divNode.appendChild(button);
+    // Attach close modal to button
     const modalCloseBtnSuccess = document.querySelectorAll(".button-close");
     modalCloseBtnSuccess.forEach((btn) => btn.addEventListener("click", closeModal));
   }
@@ -109,31 +161,3 @@ function resetErrorAttributs(element) {
   element.removeAttribute("data-error");
   element.removeAttribute("data-error-visible");
 }
-
-// Define specific message for each input
-const errorMessages = {
-  first: "Veuillez entrer 2 caractères ou plus pour le champ du Prénom.",
-  last: "Veuillez entrer 2 caractères ou plus pour le champ du Nom.",
-  email: "Veuillez saisir un E-mail valide.",
-  birthdate: "Vous devez entrer votre date de naissance.",
-  quantity: "Vous devez indiquer le nombre (entier) de tournois auxquels vous avez déjà participé.",
-  location: "Vous devez choisir une option.",
-  checkbox1: "Vous devez vérifier que vous acceptez les termes et conditions."
-}
-
-// DOM Elements
-const modalbg = document.querySelector(".bground");
-const modalBtn = document.querySelectorAll(".modal-btn");
-const modalCloseBtn = document.querySelectorAll(".close");
-const formData = document.querySelectorAll(".formData");
-const form = document.getElementById("form");
-const content = document.querySelector(".content");
-
-// launch modal event
-modalBtn.forEach((btn) => btn.addEventListener("click", launchModal));
-
-// Close modal event
-modalCloseBtn.forEach((btn) => btn.addEventListener("click", closeModal));
-
-// Launch validate on form submit
-form.addEventListener('submit', validate);
