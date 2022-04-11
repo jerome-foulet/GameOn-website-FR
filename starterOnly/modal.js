@@ -87,7 +87,7 @@ function validate(e) {
         // const emailRegExp = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
         // Basic check for string@string.string
         const emailRegExp = /^\S+@\S+\.\S+$/;
-        displayErrorMessage = currentElement.value.length === 0 || !emailRegExp.test(currentElement.value);
+        displayErrorMessage = !emailRegExp.test(currentElement.value);
         break;
       case 'birthdate':
         const inputDate = new Date(currentElement.value);
@@ -104,7 +104,8 @@ function validate(e) {
         }
         break;
       case 'quantity':
-        displayErrorMessage = !Number.isInteger(Number(currentElement.value)) || Number(currentElement.value) < 0;
+        //console.log(currentElement.value, displayErrorMessage, !Number.isInteger(Number(currentElement.value)), Number(currentElement.value) < 0);
+        displayErrorMessage = !currentElement.value || !Number.isInteger(Number(currentElement.value)) || Number(currentElement.value) < 0;
         break;
       case 'location':
         // Change methode to get currentElement
@@ -147,6 +148,7 @@ function validate(e) {
 
 // Check if a Date istance is valid
 function isValidDate(date) {
+  //console.log(date, isNaN(date), !isNaN(date))
   return date instanceof Date && !isNaN(date);
 }
 
